@@ -1,0 +1,17 @@
+{
+  "name": "digital-store",
+  "version": "1.0.0",
+  "description": "E-commerce platform for digital products",
+  "scripts": {
+    "build": "cd frontend && yarn install && yarn build",
+    "vercel-build": "cd frontend && yarn install && yarn build"
+  },
+  "keywords": [
+    "ecommerce",
+    "digital-products",
+    "react",
+    "fastapi"
+  ],
+  "author": "",
+  "license": "MIT"
+}
