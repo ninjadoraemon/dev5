@@ -749,23 +749,39 @@ async def seed_admin():
     await db.users.insert_one(admin_dict)
     return {"message": "Admin user created", "email": "admin@digitalstore.com", "password": "admin123"}
 
-# Include router
+# ✅ Include all routers
 app.include_router(api_router)
+
+# ✅ Safe, flexible CORS handling
+origins_env = os.environ.get("CORS_ORIGINS", "*")
+
+if origins_env == "*":
+    allow_origins = ["*"]
+else:
+    allow_origins = [origin.strip() for origin in origins_env.split(",")]
 
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=allow_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ✅ Simple logging (Vercel captures stdout automatically)
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("server")
 
+logger.info("🚀 FastAPI server initialized successfully")
+
+# ✅ Graceful shutdown for MongoDB or other clients
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    client.close()
+    try:
+        client.close()
+        logger.info("✅ MongoDB connection closed successfully.")
+    except Exception as e:
+        logger.error(f"❌ Error closing MongoDB client: {e}")
